@@ -1,0 +1,73 @@
+version: '2.4'
+
+networks:
+  dmz:
+    name: dath-dmz
+    ipam:
+      config:
+        - subnet: '172.16.163.0/24'
+          gateway: '172.16.163.1'
+
+  intranet:
+    name: dath-intranet
+    ipam:
+      config:
+        - subnet: '192.168.163.0/24'
+          gateway: '192.168.163.1'
+
+services:
+  #########################################
+  #                Bastion                #
+  #########################################
+  bastion:
+    build: ./hosts/bastion
+    image: dath/bastion:latest
+    restart: always
+    container_name: dath-bastion
+    networks:
+      dmz:
+        ipv4_address: '172.16.163.254'
+      intranet:
+        ipv4_address: '192.168.163.254'
+
+  #########################################
+  #                 DMZ                   #
+  #########################################
+  web:
+    build: ./hosts/web
+    image: dath/web:latest
+    restart: always
+    container_name: dath-web
+    networks:
+      dmz:
+        ipv4_address: '172.16.163.251'
+
+  mail:
+    build: ./hosts/mail
+    image: dath/mail:latest
+    restart: always
+    container_name: dath-mail
+    networks:
+      dmz:
+        ipv4_address: '172.16.163.252'
+
+  #########################################
+  #               Intranet                #
+  #########################################
+  dns:
+    build: ./hosts/dns
+    image: dath/dns:latest
+    restart: always
+    container_name: dath-dns
+    networks:
+      intranet:
+        ipv4_address: '192.168.163.251'
+
+  dhcp:
+    build: ./hosts/dhcp
+    image: dath/dhcp:latest
+    restart: always
+    container_name: dath-dhcp
+    networks:
+      intranet:
+        ipv4_address: '192.168.163.252'

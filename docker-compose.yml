@@ -41,6 +41,9 @@ services:
     networks:
       dmz:
         ipv4_address: '172.16.163.251'
+    ports:
+      - '2022:22'
+      - '8080:80'
 
   mail:
     build: ./hosts/mail
@@ -62,6 +65,9 @@ services:
     networks:
       intranet:
         ipv4_address: '192.168.163.251'
+    ports:
+      - '5053:53/udp'
+      - '5053:53/tcp'
 
   dhcp:
     build: ./hosts/dhcp
@@ -71,3 +77,5 @@ services:
     networks:
       intranet:
         ipv4_address: '192.168.163.252'
+    ports:
+      - '6067:67/udp'

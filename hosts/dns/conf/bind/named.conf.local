@@ -1,0 +1,14 @@
+zone "tuan.com" {
+  type master;
+  file "/etc/bind/zones/db.tuan.com";
+};
+
+zone "163.168.192.in-addr.arpa" {
+  type master;
+  file "/etc/bind/zones/db.192.168.163";
+};
+
+zone "163.16.172.in-addr.arpa" {
+  type master;
+  file "/etc/bind/zones/db.172.16.163";
+};

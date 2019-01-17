@@ -112,11 +112,17 @@ PrintMotd no
 AcceptEnv LANG LC_*
 
 # override default of no subsystems
-Subsystem       sftp    /usr/lib/openssh/sftp-server
+Subsystem       sftp    internal-sftp
 
-# Example of overriding settings on a per-user basis
-#Match User anoncvs
-#       X11Forwarding no
-#       AllowTcpForwarding no
-#       PermitTTY no
-#       ForceCommand cvs server
+# Only allow these groups to gain SSH access
+AllowGroups webadmin
+
+# # Only allow webadmin to use sftp to manipulate /var/www directory without shell access
+# Match Group webadmin
+#   ForceCommand internal-sftp
+#   PasswordAuthentication yes
+#   ChrootDirectory /var/www
+#   PermitTunnel no
+#   AllowAgentForwarding no
+#   AllowTcpForwarding no
+#   X11Forwarding no

@@ -22,19 +22,21 @@ RUN echo "${ADMIN_USERNAME}:${ADMIN_PASSWORD}" | chpasswd
 #                                   NGINX                                       #
 #################################################################################
 
-# Disable default site
+# Copy nginx config
+COPY ./etc/nginx/nginx.conf /etc/nginx/nginx.conf
+
+# Remove symlink to disable the nginx default site
 RUN rm /etc/nginx/sites-enabled/default
 
-# Configure & Enable tuan.com site
-COPY www/tuan.com /var/www/tuan.com
-RUN chown -R root:webadmin /var/www
-RUN chmod -R 775 /var/www
-COPY conf/nginx/tuan.com /etc/nginx/sites-available
+# Configure & Symlink to enable tuan.com site
+COPY ./var/www/tuan.com /var/www/tuan.com
+COPY ./etc/nginx/sites-available/tuan.com /etc/nginx/sites-available/tuan.com
 RUN ln -s /etc/nginx/sites-available/tuan.com /etc/nginx/sites-enabled/tuan.com
 
-# Forward request and error logs to stdout and stderr
-RUN ln -sf /dev/stdout /var/log/nginx/access.log \
-	&& ln -sf /dev/stderr /var/log/nginx/error.log
+# Ensure webadmin can update www contents
+RUN chmod -R 755 /var/www
+RUN chmod -R 775 /var/www/*
+RUN chown -R root:webadmin /var/www
 
 # Generate .htpasswd file for basic auth
 RUN htpasswd -c -b /etc/nginx/.htpasswd ${ADMIN_USERNAME} ${ADMIN_PASSWORD}
@@ -44,9 +46,9 @@ RUN htpasswd -c -b /etc/nginx/.htpasswd ${ADMIN_USERNAME} ${ADMIN_PASSWORD}
 #################################################################################
 
 # Copy configurations
-COPY conf/ssh/sshd_config /etc/ssh/sshd_config
+COPY ./etc/ssh/sshd_config /etc/ssh/sshd_config
 
-# Setup run directory
+# Setup sshd privilege separation directory
 RUN mkdir -p /run/sshd
 
 #################################################################################
@@ -54,7 +56,7 @@ RUN mkdir -p /run/sshd
 #################################################################################
 
 # Copy configurations
-COPY conf/supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY ./etc/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
 
 # Command
-CMD ["/usr/bin/supervisord"]
+CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]

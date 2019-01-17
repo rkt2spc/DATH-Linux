@@ -24,6 +24,8 @@ services:
     image: dath/bastion:latest
     restart: always
     container_name: dath-bastion
+    cap_add:
+      - NET_ADMIN
     networks:
       dmz:
         ipv4_address: '172.16.163.254'
@@ -42,7 +44,7 @@ services:
       dmz:
         ipv4_address: '172.16.163.251'
     ports:
-      - '2022:22'
+      - '2222:22'
       - '8080:80'
 
   mail:
@@ -66,8 +68,8 @@ services:
       intranet:
         ipv4_address: '192.168.163.251'
     ports:
-      - '5053:53/udp'
-      - '5053:53/tcp'
+      - '5353:53/udp'
+      - '5353:53/tcp'
 
   dhcp:
     build: ./hosts/dhcp
@@ -78,4 +80,4 @@ services:
       intranet:
         ipv4_address: '192.168.163.252'
     ports:
-      - '6067:67/udp'
+      - '6767:67/udp'

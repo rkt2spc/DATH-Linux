@@ -1,6 +1,8 @@
 server {
   listen 80 default_server;
   listen [::]:80 default_server;
+  listen 8080 default_server;
+  listen [::]:8080 default_server;
 
   root /var/www/tuan.com;
 

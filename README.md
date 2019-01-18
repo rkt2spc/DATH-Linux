@@ -2,6 +2,10 @@
 
 Nguyễn Minh Tuấn - 1312663 - nmtuan.dev@gmail.com
 
+# Video demo file
+
+https://drive.google.com/open?id=1g2_hY3vXTbV34G2xxkSm7OK9ApegXzlS
+
 # Config
 
 Service configuration files are stored in the directories of their respective hosts

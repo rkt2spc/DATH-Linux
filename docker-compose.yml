@@ -1,6 +1,13 @@
 version: '2.4'
 
 networks:
+  extranet:
+    name: dath-extranet
+    ipam:
+      config:
+        - subnet: '10.10.0.0/16'
+          gateway: '10.10.163.1'
+
   dmz:
     name: dath-dmz
     ipam:
@@ -27,6 +34,8 @@ services:
     cap_add:
       - NET_ADMIN
     networks:
+      extranet:
+        ipv4_address: '10.10.163.254'
       dmz:
         ipv4_address: '172.16.163.254'
       intranet:
@@ -46,6 +55,7 @@ services:
     ports:
       - '2222:22'
       - '8080:80'
+      - '4443:443'
 
   mail:
     build: ./hosts/mail
@@ -81,3 +91,14 @@ services:
         ipv4_address: '192.168.163.252'
     ports:
       - '6767:67/udp'
+
+  user:
+    build: ./hosts/user
+    image: dath/user:latest
+    restart: always
+    container_name: dath-user
+    dns: '192.168.163.251'
+    cap_add:
+      - NET_ADMIN
+    networks:
+      intranet:

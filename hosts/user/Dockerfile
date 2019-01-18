@@ -1,14 +1,14 @@
 FROM ubuntu:18.04
 
-# Update dependencies
 RUN apt-get update && apt-get install --yes \
+  dnsutils \
   net-tools \
-  iptables \
-  iptables-persistent \
+  openssh-client \
   iputils-ping \
-  curl \
   traceroute \
-  dnsutils
+  iptables \
+  nmap \
+  curl
 
 WORKDIR /workdir
 COPY ./up.sh .

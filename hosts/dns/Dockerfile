@@ -11,5 +11,12 @@ COPY ./etc/bind/named.conf.options /etc/bind/named.conf.options
 COPY ./etc/bind/named.conf.local /etc/bind/named.conf.local
 COPY ./etc/bind/zones /etc/bind/zones
 
+# Workdir
+WORKDIR /workdir
+COPY ./up.sh .
+
+# Entrypoint
+ENTRYPOINT ["/workdir/up.sh"]
+
 # Command
 CMD ["/usr/sbin/named", "-g"]

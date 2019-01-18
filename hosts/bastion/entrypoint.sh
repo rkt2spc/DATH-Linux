@@ -31,20 +31,16 @@ iptables -t filter -A FORWARD -s $INTRANET -p tcp --dport 22 -m conntrack --ctst
 iptables -t filter -A FORWARD -p tcp --sport 22 -m conntrack --ctstate ESTABLISHED -j ACCEPT
 
 # Allow HTTP/HTTPS from anywhere to the dmz (where the web server is hosted)
-iptables -t filter -A FORWARD -d $DMZ -p tcp --dport 80 -j ACCEPT
-iptables -t filter -A FORWARD -d $DMZ -p tcp --dport 443 -j ACCEPT
-iptables -t filter -A FORWARD -s $DMZ -p tcp --sport 80 -j ACCEPT
-iptables -t filter -A FORWARD -s $DMZ -p tcp --sport 443 -j ACCEPT
+iptables -t filter -A FORWARD -d $DMZ -p tcp -m multiport --ports 80,443 -j ACCEPT
+iptables -t filter -A FORWARD -s $DMZ -p tcp -m multiport --ports 80,443 -j ACCEPT
 
 # Allow HTTP/HTTPS from to the internet
-iptables -t filter -A FORWARD -o $INTERNET_GATEWAY_INTERFACE -p tcp --dport 80 -j ACCEPT
-iptables -t filter -A FORWARD -o $INTERNET_GATEWAY_INTERFACE -p tcp --dport 443 -j ACCEPT
-iptables -t filter -A FORWARD -i $INTERNET_GATEWAY_INTERFACE -p tcp --sport 80 -j ACCEPT
-iptables -t filter -A FORWARD -i $INTERNET_GATEWAY_INTERFACE -p tcp --sport 443 -j ACCEPT
+iptables -t filter -A FORWARD -o $INTERNET_GATEWAY_INTERFACE -p tcp -m multiport --ports 80,443 -j ACCEPT
+iptables -t filter -A FORWARD -i $INTERNET_GATEWAY_INTERFACE -p tcp -m multiport --ports 80,443 -j ACCEPT
 
 # Allow DNS
-iptables -t filter -A FORWARD -p tcp --dport 53 -j ACCEPT
-iptables -t filter -A FORWARD -p udp --dport 53 -j ACCEPT
+iptables -t filter -A FORWARD -p tcp -m multiport --ports 53 -j ACCEPT
+iptables -t filter -A FORWARD -p udp -m multiport --ports 53 -j ACCEPT
 
 # DHCP shouldn't be allowed to pass through the firewall
 # because the DHCP server sit in the same subnet as user machines
@@ -54,13 +50,13 @@ iptables -t filter -A FORWARD -p udp --dport 53 -j ACCEPT
 # NAT TABLE
 ##############################################################
 
-# Masquerade packet address to translate IP in/out of the intranet
-iptables -t nat -A POSTROUTING -d $INTRANET -j MASQUERADE
-
-# Masquerade packet address to translate IP in/out of the DMZ
-iptables -t nat -A POSTROUTING -d $DMZ -j MASQUERADE
+# Proxy HTTP/HTTPS traffic to squid
+iptables -t nat -A PREROUTING -i eth1 -p tcp --dport 80 -j DNAT --to 127.0.0.1:3128
 
 # Masquerade packet address to translate IP from/to the internet
 iptables -t nat -A POSTROUTING -o $INTERNET_GATEWAY_INTERFACE -j MASQUERADE
 
 set +x
+
+# Execute
+exec "$@"

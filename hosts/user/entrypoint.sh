@@ -32,3 +32,12 @@ curl -I -X GET http://tuan.com
 curl -k -I -X GET https://tuan.com
 curl -I -X GET https://google.com
 set +x
+
+# Test SSH
+echo "\n\n=== Test SSH ==="
+set -x
+sshpass -p '123456' ssh -vT tuan@tuan.com
+set +x
+
+# Execute
+exec "$@"

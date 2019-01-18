@@ -3,14 +3,32 @@ FROM ubuntu:18.04
 # Update dependencies
 RUN apt-get update && apt-get install --yes \
   net-tools \
-  iptables \
-  iptables-persistent \
+  supervisor \
   iputils-ping \
-  curl \
   traceroute \
-  dnsutils
+  iptables \
+  squid
 
+#################################################################################
+#                                   Squid                                       #
+#################################################################################
+
+# Copy Squid configuration
+COPY ./etc/squid/squid.conf /etc/squid/squid.conf
+
+#################################################################################
+#                                Supervisor                                     #
+#################################################################################
+
+# Copy configurations
+COPY ./etc/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
+
+# Workdir
 WORKDIR /workdir
-COPY ./up.sh .
+COPY ./entrypoint.sh .
 
-CMD ["tail", "-f", "/var/log/dpkg.log"]
+# Entrypoint
+ENTRYPOINT ["/workdir/entrypoint.sh"]
+
+# Command
+CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]

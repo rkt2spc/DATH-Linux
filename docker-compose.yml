@@ -49,6 +49,8 @@ services:
     image: dath/web:latest
     restart: always
     container_name: dath-web
+    cap_add:
+      - NET_ADMIN
     networks:
       dmz:
         ipv4_address: '172.16.163.251'
@@ -57,14 +59,16 @@ services:
       - '8080:80'
       - '4443:443'
 
-  mail:
-    build: ./hosts/mail
-    image: dath/mail:latest
-    restart: always
-    container_name: dath-mail
-    networks:
-      dmz:
-        ipv4_address: '172.16.163.252'
+  # mail:
+  #   build: ./hosts/mail
+  #   image: dath/mail:latest
+  #   restart: 'no'
+  #   container_name: dath-mail
+  #   cap_add:
+  #     - NET_ADMIN
+  #   networks:
+  #     dmz:
+  #       ipv4_address: '172.16.163.252'
 
   #########################################
   #               Intranet                #
@@ -74,6 +78,8 @@ services:
     image: dath/dns:latest
     restart: always
     container_name: dath-dns
+    cap_add:
+      - NET_ADMIN
     networks:
       intranet:
         ipv4_address: '192.168.163.251'
@@ -86,6 +92,8 @@ services:
     image: dath/dhcp:latest
     restart: always
     container_name: dath-dhcp
+    cap_add:
+      - NET_ADMIN
     networks:
       intranet:
         ipv4_address: '192.168.163.252'

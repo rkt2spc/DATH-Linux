@@ -2,6 +2,7 @@ FROM ubuntu:18.04
 
 # Install dependencies
 RUN apt-get update && apt-get install --yes \
+  net-tools \
   supervisor \
   openssh-server \
   apache2-utils \
@@ -63,10 +64,10 @@ COPY ./etc/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
 
 # Workdir
 WORKDIR /workdir
-COPY ./up.sh .
+COPY ./entrypoint.sh .
 
 # Entrypoint
-ENTRYPOINT ["/workdir/up.sh"]
+ENTRYPOINT ["/workdir/entrypoint.sh"]
 
 # Command
 CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]
